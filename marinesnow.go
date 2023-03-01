@@ -2,9 +2,10 @@
 package marinesnow
 
 import (
-	er "marinesnow/error"
-	sf "marinesnow/snowflake"
 	t "time"
+
+	er "github.com/studigo/marinesnow/error"
+	sf "github.com/studigo/marinesnow/snowflake"
 )
 
 var timestampOffset int64 // 採番開始日時.を保持する.
