@@ -1,5 +1,4 @@
-// snowflake を定義するパッケージ
-package snowflake
+package marinesnow
 
 import "strconv"
 

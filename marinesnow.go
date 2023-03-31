@@ -2,10 +2,8 @@
 package marinesnow
 
 import (
+	"fmt"
 	t "time"
-
-	er "github.com/studigo/marinesnow/error"
-	sf "github.com/studigo/marinesnow/snowflake"
 )
 
 var timestampOffset int64 // 採番開始日時.を保持する.
@@ -18,12 +16,12 @@ func SetWorkerID(id int64) error {
 
 	// 負の値を弾く.
 	if id < 0 {
-		return er.InvalidValue(id)
+		return fmt.Errorf("invalid value: %d", id)
 	}
 
 	// 10bitを超える数値を弾く.
-	if sf.WORKER_ID_MASK < id {
-		return er.InvalidValue(id)
+	if WORKER_ID_MASK < id {
+		return fmt.Errorf("invalid value: %d", id)
 	}
 
 	// workerID を設定する.
@@ -36,12 +34,12 @@ func SetTimestampOffset(offset int64) error {
 
 	// 負の値を弾く.
 	if offset < 0 {
-		return er.InvalidValue(offset)
+		return fmt.Errorf("invalid value: %d", offset)
 	}
 
 	// 未来の時間を弾く.
 	if t.Now().UnixMilli() < offset {
-		return er.InvalidValue(offset)
+		return fmt.Errorf("invalid value: %d", offset)
 	}
 
 	// 採番開始日時を設定する.
@@ -50,13 +48,13 @@ func SetTimestampOffset(offset int64) error {
 }
 
 // snowflakeを生成する.
-func Generate() (sf.Snowflake, error) {
+func Generate() (Snowflake, error) {
 	var time int64 = t.Now().UnixMilli()
-	var newSF sf.Snowflake
+	var newSF Snowflake
 
 	// 時間が巻き戻っているなら弾く.
 	if time < lastTimestamp {
-		return newSF, er.TimeIsRewound()
+		return newSF, fmt.Errorf("timestamp was rolled back")
 	}
 
 	// インクリメント値を設定する
@@ -67,16 +65,16 @@ func Generate() (sf.Snowflake, error) {
 	}
 
 	// インクリメント値がカンストしたら弾く.
-	if sf.INCREMENTS_MASK < increments {
-		return newSF, er.NoMoreID()
+	if INCREMENTS_MASK < increments {
+		return newSF, fmt.Errorf("limit reached")
 	}
 
-	// Snowflake ID を生成する.
-	shiftedTimestamp := (time - timestampOffset) << sf.TIMESTAMP_SHIFT
-	shiftedWorkerID := workerID << sf.WORKER_ID_SHIFT
-	shiftedIncrements := increments << sf.INCREMENTS_SHIFT
+	// Snowflake を生成する.
+	shiftedTimestamp := (time - timestampOffset) << TIMESTAMP_SHIFT
+	shiftedWorkerID := workerID << WORKER_ID_SHIFT
+	shiftedIncrements := increments << INCREMENTS_SHIFT
 
-	newSF = sf.Snowflake(shiftedTimestamp | shiftedWorkerID | shiftedIncrements)
+	newSF = Snowflake(shiftedTimestamp | shiftedWorkerID | shiftedIncrements)
 	lastTimestamp = time
 
 	return newSF, nil

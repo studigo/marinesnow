@@ -1,8 +1,9 @@
 # Marinesnow
 
 ## 概要
-シンプルなGolang製 snowflake ID 採番ライブラリです。
-`workerID` と `timestampOffset` を設定(どちらも任意)すれば、あとは `Generate()` 関数を叩くだけで snowflake ID を採番することが出来ます。
+シンプルなGolang製 snowflake 採番ライブラリです。
+`workerID` と `timestampOffset` を設定(どちらも任意)すれば、
+あとは `Generate()` 関数を叩くだけで snowflake を採番することが出来ます。
 
 ## 具体的な使用方法
 
@@ -12,8 +13,8 @@ package main
 
 import (
 	"fmt"
-	"marinesnow"           // ID 採番機本体.
-	"marinesnow/snowflake" // snowflake 型を提供するサブパッケージ.
+
+	"github.com/studigo/marinesnow"
 )
 
 func main() {
@@ -47,22 +48,22 @@ func main() {
 	}
 
 	// 既存の snowflake も使用できます.
-	existing := snowflake.Snowflake(1490753660736864259)
+	existing := marinesnow.Snowflake(1490753660736864259)
 	fmt.Println("existing:", existing)
 }
 ```
 
 出力例:
 ```
-snowflake: 8298866692096
-timestamp: 1978604
+snowflake: 10864169163182080
+timestamp: 2590219775
 workerID: 5
 increments: 0
-base2:  1111000110000111011000000000101000000000000
-base8:  170607300050000
-base10: 8298866692096
-base16: 78c3b005000
-base32: 7hgtg0k00
+base2:  100110100110001110011101111111110000000101000000000000
+base8:  464616357760050000
+base10: 10864169163182080
+base16: 2698e77fc05000
+base32: 9kostvs0k00
 existing: 1490753660736864259
 ```
 
